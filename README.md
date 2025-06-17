@@ -6,6 +6,9 @@ Um dashboard interativo para análise de dados da COVID-19 no Brasil e no mundo,
 
 Este projeto apresenta um dashboard interativo que permite visualizar e analisar dados da COVID-19, com foco especial no Brasil. O dashboard oferece diferentes visualizações e análises comparativas, permitindo uma compreensão mais profunda da evolução da pandemia.
 
+**Dashboard online:**
+[https://dashboard-covid19-517319361202.southamerica-east1.run.app](https://dashboard-covid19-517319361202.southamerica-east1.run.app)
+
 ## ✨ Funcionalidades
 
 - Visualização de dados da COVID-19 no Brasil
@@ -92,40 +95,6 @@ http://127.0.0.1:8050
 5. Crie o serviço no Cloud Run, selecione a imagem enviada e configure as variáveis de ambiente (ex: `BRASIL_IO_API_KEY`)
 6. Permita invocações não autenticadas para acesso público
 7. Acesse o dashboard pela URL fornecida pelo Cloud Run:
-
-**Dashboard online:**
-[https://dashboard-covid19-517319361202.southamerica-east1.run.app](https://dashboard-covid19-517319361202.southamerica-east1.run.app)
-
-## 📁 Estrutura do Projeto
-
-```
-dashboard-covid19/
-├── app.py              # Arquivo principal da aplicação
-├── requirements.txt    # Dependências do projeto
-├── Dockerfile          # Configuração do container
-├── .dockerignore       # Arquivos ignorados no build
-├── src/                # Código fonte
-│   ├── components/     # Componentes do dashboard
-│   └── utils/          # Funções utilitárias
-├── assets/             # Arquivos estáticos
-├── tests/              # Testes automatizados
-└── docs/               # Documentação
-```
-
-## 📦 Quais arquivos subir para o repositório?
-
-**Inclua no repositório:**
-- Todo o código fonte (`app.py`, `src/`, `assets/`, `tests/`, `docs/`)
-- `requirements.txt`
-- `Dockerfile`
-- `.dockerignore`
-- `README.md`
-
-**Não inclua no repositório:**
-- Arquivo `.env` (contém informações sensíveis, como chaves de API)
-- Pastas de ambiente virtual (`.venv/`, `venv/`, `ENV/`)
-- Arquivos de cache Python (`__pycache__/`, `*.pyc`)
-- Dados sensíveis ou pessoais
 
 ## 🤝 Contribuindo
 
