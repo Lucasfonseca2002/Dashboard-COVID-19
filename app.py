@@ -52,14 +52,14 @@ app.layout = dbc.Container([
     [dash.dependencies.Input('url', 'pathname')]
 )
 def display_page(pathname):
-    print(f"🔄 Navegação para: {pathname}")
+    print(f"Navegação para: {pathname}")
     
     try:
         if pathname == '/brasil' or pathname == '/':
             # Importar e criar o layout do dashboard Brasil
             from src.components.brasil_dashboard import create_brasil_dashboard
             layout = create_brasil_dashboard()
-            print("✅ Dashboard Brasil carregado")
+            print("Dashboard Brasil carregado")
             return layout
         elif pathname == '/comparacao':
             from src.components.comparison_dashboard import create_comparison_dashboard
@@ -72,7 +72,7 @@ def display_page(pathname):
                 html.P('A página solicitada não existe.')
             ])
     except ImportError as ie:
-        print(f"❌ Erro de importação: {ie}")
+        print(f"Erro de importação: {ie}")
         return html.Div([
             html.H3('Erro ao carregar página'),
             html.P(f'Erro de importação: {str(ie)}'),
