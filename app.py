@@ -64,7 +64,7 @@ def display_page(pathname):
         elif pathname == '/comparacao':
             from src.components.comparison_dashboard import create_comparison_dashboard
             layout = create_comparison_dashboard()
-            print("✅ Dashboard Comparação carregado")
+            print("Dashboard Comparação carregado")
             return layout
         else:
             return html.Div([
@@ -79,7 +79,7 @@ def display_page(pathname):
             html.P('Verifique se todos os arquivos estão no local correto.')
         ])
     except Exception as e:
-        print(f"❌ Erro geral: {e}")
+        print(f" Erro geral: {e}")
         return html.Div([
             html.H3('Erro ao carregar página'),
             html.P(f'Erro: {str(e)}'),
@@ -88,20 +88,20 @@ def display_page(pathname):
 
 # Importar os callbacks APÓS definir o layout
 try:
-    print("📝 Registrando callbacks...")
+    print("Registrando callbacks...")
     # Isso vai registrar os callbacks dos dashboards
     import src.components.brasil_dashboard
     import src.components.comparison_dashboard
-    print("✅ Callbacks registrados com sucesso")
+    print("Callbacks registrados com sucesso")
 except Exception as e:
-    print(f"❌ Erro ao registrar callbacks: {e}")
+    print(f" Erro ao registrar callbacks: {e}")
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     host = os.environ.get("HOST", "0.0.0.0")
     print("="*50)
-    print("🚀 INICIANDO DASHBOARD COVID-19")
+    print("INICIANDO DASHBOARD COVID-19")
     print("="*50)
-    print(f"📍 Acesse: http://{host}:{port}")
+    print(f" Acesse: http://{host}:{port}")
     print("="*50)
     app.run_server(debug=False, host=host, port=port)
