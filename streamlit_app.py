@@ -415,7 +415,60 @@ def dashboard_comparacao():
             has_deaths = 'deaths' in df_paises.columns
             
             if has_cases or has_deaths:
-                st.subheader("📈 Visualizações Gráficas")
+                # Dados comparativos em formato gráfico
+                st.subheader("📊 Dados Comparativos")
+                
+                if has_cases and has_deaths:
+                    try:
+                        # Gráfico comparativo vertical com casos e óbitos
+                        px = get_plotly_express()
+                        go = get_plotly_go()
+                        
+                        fig_comparison = go.Figure()
+                        
+                        # Adicionar barras de casos
+                        fig_comparison.add_trace(go.Bar(
+                            name='Casos',
+                            x=df_paises['country'],
+                            y=df_paises['cases'],
+                            marker_color='lightblue',
+                            yaxis='y'
+                        ))
+                        
+                        # Adicionar barras de óbitos (eixo Y secundário)
+                        fig_comparison.add_trace(go.Bar(
+                            name='Óbitos',
+                            x=df_paises['country'],
+                            y=df_paises['deaths'],
+                            marker_color='lightcoral',
+                            yaxis='y2'
+                        ))
+                        
+                        # Configurar layout com dois eixos Y
+                        fig_comparison.update_layout(
+                            title="📊 Comparativo: Casos vs Óbitos por País",
+                            xaxis_title="País",
+                            yaxis=dict(
+                                title="Casos Totais",
+                                side="left",
+                                color="blue"
+                            ),
+                            yaxis2=dict(
+                                title="Óbitos Totais",
+                                side="right",
+                                overlaying="y",
+                                color="red"
+                            ),
+                            barmode='group',
+                            height=500
+                        )
+                        
+                        st.plotly_chart(fig_comparison, use_container_width=True)
+                        
+                    except Exception as e:
+                        st.error(f"Erro ao criar gráfico comparativo: {e}")
+                
+                st.subheader("📈 Visualizações Detalhadas")
                 
                 # Primeira linha de gráficos
                 col1, col2 = st.columns(2)
