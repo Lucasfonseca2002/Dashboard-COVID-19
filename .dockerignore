@@ -1,0 +1,29 @@
+# Ambiente virtual
+.venv/
+venv/
+ENV/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+
+# Arquivos de desenvolvimento
+.git
+.gitignore
+.env
+*.log
+.DS_Store
+
+# Arquivos de teste
+tests/
+docs/
+
+# Arquivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo 

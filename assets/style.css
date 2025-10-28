@@ -1,0 +1,42 @@
+/* Estilos customizados */
+/* Estilos customizados para o dashboard */
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsividade para gráficos */
+@media (max-width: 768px) {
+    .row {
+        margin: 0;
+    }
+    
+    .col {
+        padding: 0.5rem;
+    }
+}
+
+/* Animações suaves */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
