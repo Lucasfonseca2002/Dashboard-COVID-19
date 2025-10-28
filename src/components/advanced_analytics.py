@@ -78,11 +78,14 @@ def create_moving_averages_chart(df_with_ma):
                       name='Casos Diários', line=dict(color='lightblue', width=1)),
             row=1, col=1
         )
-        fig.add_trace(
-            go.Scatter(x=df_state['date'], y=df_state['casos_ma7'], 
-                      name='Média Móvel 7d', line=dict(color='blue', width=3)),
-            row=1, col=1
-        )
+        
+        # Verificar se a coluna de média móvel existe
+        if 'ma_cases' in df_state.columns:
+            fig.add_trace(
+                go.Scatter(x=df_state['date'], y=df_state['ma_cases'], 
+                          name='Média Móvel 7d', line=dict(color='blue', width=3)),
+                row=1, col=1
+            )
         
         # Óbitos
         fig.add_trace(
@@ -90,11 +93,14 @@ def create_moving_averages_chart(df_with_ma):
                       name='Óbitos Diários', line=dict(color='lightcoral', width=1)),
             row=2, col=1
         )
-        fig.add_trace(
-            go.Scatter(x=df_state['date'], y=df_state['obitos_ma7'], 
-                      name='Média Móvel 7d', line=dict(color='red', width=3)),
-            row=2, col=1
-        )
+        
+        # Verificar se a coluna de média móvel existe
+        if 'ma_deaths' in df_state.columns:
+            fig.add_trace(
+                go.Scatter(x=df_state['date'], y=df_state['ma_deaths'], 
+                          name='Média Móvel 7d', line=dict(color='red', width=3)),
+                row=2, col=1
+            )
         
         fig.update_layout(height=600, title=f'Análise Temporal - {selected_state}')
         st.plotly_chart(fig, use_container_width=True)
