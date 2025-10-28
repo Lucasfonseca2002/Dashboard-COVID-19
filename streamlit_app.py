@@ -335,6 +335,9 @@ def dashboard_brasil():
     # Gráficos
     st.subheader("📊 Análises por Estados")
     
+    # Importar plotly express
+    px = get_plotly_express()
+    
     # Top 10 Estados
     col1, col2 = st.columns(2)
     
@@ -460,51 +463,6 @@ def show_memory_debug():
         else:
             st.sidebar.info("Monitoramento de memória não disponível")
 
-def main():
-    """Função principal do dashboard"""
-    st.title("🦠 Dashboard COVID-19")
-    st.markdown("Análise de dados da COVID-19 no Brasil e no mundo")
-    
-    # Sidebar para navegação
-    st.sidebar.title("Navegação")
-    page = st.sidebar.selectbox(
-        "Escolha uma página:",
-        ["Brasil", "Análises Avançadas", "Comparação Mundial"]
-    )
-    
-    # Monitoramento de memória (debug)
-    show_memory_debug()
-    
-    # Informações na sidebar
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Sobre o Dashboard")
-    st.sidebar.markdown("""
-    Este dashboard apresenta dados atualizados sobre a COVID-19:
-    
-    **🇧🇷 Brasil**: Análise detalhada por estados
-    **📈 Análises Avançadas**: Séries temporais, mapas e indicadores
-    **🌍 Mundial**: Comparação entre países
-    
-    **Fontes de dados:**
-    - Brasil.io (dados nacionais)
-    - Disease.sh (dados mundiais)
-    """)
-    
-    # Renderizar página selecionada
-    if page == "Brasil":
-        dashboard_brasil()
-    elif page == "Análises Avançadas":
-        dashboard_analises_avancadas()
-    elif page == "Comparação Mundial":
-        dashboard_comparacao()
-    
-    # Footer
-    st.markdown("---")
-    st.markdown("*Dashboard desenvolvido com Streamlit | Dados atualizados automaticamente*")
-
-if __name__ == "__main__":
-    main()
-
 def dashboard_analises_avancadas():
     """Dashboard com análises avançadas dos dados de COVID-19 do Brasil"""
     
@@ -586,3 +544,48 @@ def dashboard_analises_avancadas():
             create_regional_analysis(brasil_data)
         else:
             st.warning("Dados regionais não disponíveis")
+
+def main():
+    """Função principal do dashboard"""
+    st.title("🦠 Dashboard COVID-19")
+    st.markdown("Análise de dados da COVID-19 no Brasil e no mundo")
+    
+    # Sidebar para navegação
+    st.sidebar.title("Navegação")
+    page = st.sidebar.selectbox(
+        "Escolha uma página:",
+        ["Brasil", "Análises Avançadas", "Comparação Mundial"]
+    )
+    
+    # Monitoramento de memória (debug)
+    show_memory_debug()
+    
+    # Informações na sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 Sobre o Dashboard")
+    st.sidebar.markdown("""
+    Este dashboard apresenta dados atualizados sobre a COVID-19:
+    
+    **🇧🇷 Brasil**: Análise detalhada por estados
+    **📈 Análises Avançadas**: Séries temporais, mapas e indicadores
+    **🌍 Mundial**: Comparação entre países
+    
+    **Fontes de dados:**
+    - Brasil.io (dados nacionais)
+    - Disease.sh (dados mundiais)
+    """)
+    
+    # Renderizar página selecionada
+    if page == "Brasil":
+        dashboard_brasil()
+    elif page == "Análises Avançadas":
+        dashboard_analises_avancadas()
+    elif page == "Comparação Mundial":
+        dashboard_comparacao()
+    
+    # Footer
+    st.markdown("---")
+    st.markdown("*Dashboard desenvolvido com Streamlit | Dados atualizados automaticamente*")
+
+if __name__ == "__main__":
+    main()
