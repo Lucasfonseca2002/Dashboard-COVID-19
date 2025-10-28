@@ -401,7 +401,7 @@ def dashboard_comparacao():
     paises_selecionados = st.multiselect(
         "Selecione os países para comparação:",
         paises_disponiveis,
-        default=['USA', 'India', 'France', 'Germany']
+        default=['USA', 'India', 'France', 'Germany', 'South Korea']
     )
     
     if paises_selecionados:
@@ -410,28 +410,119 @@ def dashboard_comparacao():
             df_paises = load_countries_data(paises_selecionados)
         
         if df_paises is not None and not df_paises.empty:
+            # Mostrar colunas disponíveis para debug
+            st.write("**Colunas disponíveis:**", list(df_paises.columns))
+            
             # Exibir dados em tabela
             st.subheader("📊 Dados Comparativos")
-            st.dataframe(df_paises)
+            st.dataframe(df_paises, use_container_width=True)
             
             # Gráficos comparativos
+            st.subheader("📈 Visualizações Gráficas")
+            
+            # Primeira linha de gráficos
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("📈 Casos Totais")
                 if 'cases' in df_paises.columns:
                     px = get_plotly_express()
-                    fig = px.bar(df_paises, x='country', y='cases', 
-                               title="Casos Totais por País")
-                    st.plotly_chart(fig, use_container_width=True)
+                    fig_cases = px.bar(
+                        df_paises, 
+                        x='country', 
+                        y='cases', 
+                        title="📈 Casos Totais por País",
+                        color='cases',
+                        color_continuous_scale='Blues'
+                    )
+                    fig_cases.update_layout(
+                        xaxis_title="País",
+                        yaxis_title="Casos Totais",
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig_cases, use_container_width=True)
+                else:
+                    st.warning("Coluna 'cases' não encontrada nos dados")
             
             with col2:
-                st.subheader("💀 Óbitos Totais")
                 if 'deaths' in df_paises.columns:
                     px = get_plotly_express()
-                    fig = px.bar(df_paises, x='country', y='deaths', 
-                               title="Óbitos Totais por País", color_discrete_sequence=['red'])
-                    st.plotly_chart(fig, use_container_width=True)
+                    fig_deaths = px.bar(
+                        df_paises, 
+                        x='country', 
+                        y='deaths', 
+                        title="💀 Óbitos Totais por País",
+                        color='deaths',
+                        color_continuous_scale='Reds'
+                    )
+                    fig_deaths.update_layout(
+                        xaxis_title="País",
+                        yaxis_title="Óbitos Totais",
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig_deaths, use_container_width=True)
+                else:
+                    st.warning("Coluna 'deaths' não encontrada nos dados")
+            
+            # Segunda linha de gráficos
+            col3, col4 = st.columns(2)
+            
+            with col3:
+                # Gráfico de pizza para casos
+                if 'cases' in df_paises.columns:
+                    px = get_plotly_express()
+                    fig_pie_cases = px.pie(
+                        df_paises, 
+                        values='cases', 
+                        names='country', 
+                        title="🥧 Distribuição de Casos por País"
+                    )
+                    st.plotly_chart(fig_pie_cases, use_container_width=True)
+            
+            with col4:
+                # Taxa de mortalidade se possível calcular
+                if 'cases' in df_paises.columns and 'deaths' in df_paises.columns:
+                    df_paises_copy = df_paises.copy()
+                    df_paises_copy['mortality_rate'] = (df_paises_copy['deaths'] / df_paises_copy['cases'] * 100).round(2)
+                    
+                    px = get_plotly_express()
+                    fig_mortality = px.bar(
+                        df_paises_copy, 
+                        x='country', 
+                        y='mortality_rate', 
+                        title="📊 Taxa de Mortalidade (%)",
+                        color='mortality_rate',
+                        color_continuous_scale='Oranges'
+                    )
+                    fig_mortality.update_layout(
+                        xaxis_title="País",
+                        yaxis_title="Taxa de Mortalidade (%)",
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig_mortality, use_container_width=True)
+            
+            # Terceira linha - Gráfico de linha comparativo se houver dados temporais
+            if len(df_paises) > 1:
+                st.subheader("📊 Comparação Direta")
+                
+                # Gráfico de barras horizontais para melhor comparação
+                px = get_plotly_express()
+                if 'cases' in df_paises.columns:
+                    fig_horizontal = px.bar(
+                        df_paises.sort_values('cases', ascending=True), 
+                        x='cases', 
+                        y='country', 
+                        orientation='h',
+                        title="📈 Ranking de Casos por País",
+                        color='cases',
+                        color_continuous_scale='Viridis'
+                    )
+                    fig_horizontal.update_layout(
+                        xaxis_title="Casos Totais",
+                        yaxis_title="País",
+                        height=400
+                    )
+                    st.plotly_chart(fig_horizontal, use_container_width=True)
+                    
         else:
             st.error("❌ Não foi possível carregar os dados dos países selecionados.")
     else:
