@@ -2,6 +2,12 @@
 
 Um dashboard interativo para análise de dados da COVID-19 no Brasil e no mundo, desenvolvido com Streamlit e Python.
 
+## 🌐 Acesso Online
+
+**🚀 Dashboard em Produção:** [https://dashboard-covid-19-brasil.streamlit.app/](https://dashboard-covid-19-brasil.streamlit.app/)
+
+> Acesse o dashboard diretamente no seu navegador - sem necessidade de instalação!
+
 ## 📋 Descrição
 
 Este projeto apresenta um dashboard interativo que permite visualizar e analisar dados da COVID-19, com foco especial no Brasil. O dashboard oferece diferentes visualizações e análises comparativas, permitindo uma compreensão mais profunda da evolução da pandemia.
