@@ -410,10 +410,6 @@ def dashboard_comparacao():
             df_paises = load_countries_data(paises_selecionados)
         
         if df_paises is not None and not df_paises.empty:
-            # Exibir dados em tabela
-            st.subheader("📊 Dados Comparativos")
-            st.dataframe(df_paises, use_container_width=True)
-            
             # Verificar se as colunas necessárias existem
             has_cases = 'cases' in df_paises.columns
             has_deaths = 'deaths' in df_paises.columns
@@ -432,11 +428,14 @@ def dashboard_comparacao():
                                 df_paises, 
                                 x='country', 
                                 y='cases', 
-                                title="📈 Casos Totais por País"
+                                title="📈 Casos Totais por País",
+                                color='cases',
+                                color_continuous_scale='Blues'
                             )
                             fig_cases.update_layout(
                                 xaxis_title="País",
-                                yaxis_title="Casos Totais"
+                                yaxis_title="Casos Totais",
+                                showlegend=False
                             )
                             st.plotly_chart(fig_cases, use_container_width=True)
                         except Exception as e:
@@ -453,11 +452,13 @@ def dashboard_comparacao():
                                 x='country', 
                                 y='deaths', 
                                 title="💀 Óbitos Totais por País",
-                                color_discrete_sequence=['red']
+                                color='deaths',
+                                color_continuous_scale='Reds'
                             )
                             fig_deaths.update_layout(
                                 xaxis_title="País",
-                                yaxis_title="Óbitos Totais"
+                                yaxis_title="Óbitos Totais",
+                                showlegend=False
                             )
                             st.plotly_chart(fig_deaths, use_container_width=True)
                         except Exception as e:
@@ -473,17 +474,47 @@ def dashboard_comparacao():
                     
                     with col3:
                         try:
-                            # Gráfico de pizza para casos
-                            px = get_plotly_express()
-                            fig_pie = px.pie(
-                                df_paises, 
-                                values='cases', 
-                                names='country', 
-                                title="🥧 Distribuição de Casos"
-                            )
-                            st.plotly_chart(fig_pie, use_container_width=True)
+                            # Gráfico de barras vertical para casos per capita
+                            df_temp = df_paises.copy()
+                            if 'population' in df_temp.columns:
+                                df_temp['cases_per_million'] = (df_temp['cases'] / df_temp['population'] * 1000000).round(0)
+                                
+                                px = get_plotly_express()
+                                fig_per_capita = px.bar(
+                                    df_temp, 
+                                    x='country', 
+                                    y='cases_per_million', 
+                                    title="📊 Casos por Milhão de Habitantes",
+                                    color='cases_per_million',
+                                    color_continuous_scale='Greens'
+                                )
+                                fig_per_capita.update_layout(
+                                    xaxis_title="País",
+                                    yaxis_title="Casos por Milhão",
+                                    showlegend=False
+                                )
+                                st.plotly_chart(fig_per_capita, use_container_width=True)
+                            else:
+                                # Se não tiver população, mostrar ranking simples de casos
+                                df_sorted = df_paises.sort_values('cases', ascending=True)
+                                px = get_plotly_express()
+                                fig_ranking = px.bar(
+                                    df_sorted, 
+                                    x='cases', 
+                                    y='country', 
+                                    orientation='h',
+                                    title="📊 Ranking de Casos por País",
+                                    color='cases',
+                                    color_continuous_scale='Viridis'
+                                )
+                                fig_ranking.update_layout(
+                                    xaxis_title="Casos Totais",
+                                    yaxis_title="País",
+                                    showlegend=False
+                                )
+                                st.plotly_chart(fig_ranking, use_container_width=True)
                         except Exception as e:
-                            st.error(f"Erro ao criar gráfico de pizza: {e}")
+                            st.error(f"Erro ao criar gráfico de ranking: {e}")
                     
                     with col4:
                         try:
@@ -497,11 +528,13 @@ def dashboard_comparacao():
                                 x='country', 
                                 y='mortality_rate', 
                                 title="📊 Taxa de Mortalidade (%)",
-                                color_discrete_sequence=['orange']
+                                color='mortality_rate',
+                                color_continuous_scale='Oranges'
                             )
                             fig_mortality.update_layout(
                                 xaxis_title="País",
-                                yaxis_title="Taxa de Mortalidade (%)"
+                                yaxis_title="Taxa de Mortalidade (%)",
+                                showlegend=False
                             )
                             st.plotly_chart(fig_mortality, use_container_width=True)
                         except Exception as e:
