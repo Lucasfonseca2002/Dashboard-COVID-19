@@ -1,10 +1,6 @@
 # Dashboard COVID-19 - Streamlit
 
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import sys
 import os
 
@@ -13,6 +9,7 @@ def health_check():
     """Verificação de saúde simples para o Streamlit Cloud"""
     try:
         # Teste básico de funcionalidade
+        import pandas as pd
         test_df = pd.DataFrame({'test': [1, 2, 3]})
         return True
     except Exception:
@@ -26,6 +23,44 @@ if not health_check():
 # Adicionar o diretório atual ao path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
+
+# Lazy imports - carregamento sob demanda
+_pandas = None
+_plotly_express = None
+_plotly_go = None
+_plotly_subplots = None
+
+def get_pandas():
+    """Carregamento lazy do pandas"""
+    global _pandas
+    if _pandas is None:
+        import pandas as pd
+        _pandas = pd
+    return _pandas
+
+def get_plotly_express():
+    """Carregamento lazy do plotly express"""
+    global _plotly_express
+    if _plotly_express is None:
+        import plotly.express as px
+        _plotly_express = px
+    return _plotly_express
+
+def get_plotly_go():
+    """Carregamento lazy do plotly graph objects"""
+    global _plotly_go
+    if _plotly_go is None:
+        import plotly.graph_objects as go
+        _plotly_go = go
+    return _plotly_go
+
+def get_plotly_subplots():
+    """Carregamento lazy do plotly subplots"""
+    global _plotly_subplots
+    if _plotly_subplots is None:
+        from plotly.subplots import make_subplots
+        _plotly_subplots = make_subplots
+    return _plotly_subplots
 
 # Importações condicionais para evitar falhas de inicialização
 try:
@@ -82,7 +117,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-@st.cache_data(ttl=300)  # Cache por 5 minutos
+@st.cache_data(ttl=1800, max_entries=3)  # Cache por 30 minutos, máximo 3 entradas
 def load_brasil_data():
     """Carrega dados do Brasil com cache e tratamento de erro robusto"""
     try:
@@ -97,7 +132,7 @@ def load_brasil_data():
         st.warning(f"⚠️ Erro ao carregar dados do Brasil: {str(e)}")
         return get_fallback_brasil_data()
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=1800, max_entries=5)  # Cache por 30 minutos, máximo 5 entradas
 def load_world_data(limit=10):
     """Carrega dados mundiais com cache e tratamento de erro robusto"""
     try:
@@ -112,7 +147,7 @@ def load_world_data(limit=10):
         st.warning(f"⚠️ Erro ao carregar dados mundiais: {str(e)}")
         return get_fallback_world_data(limit)
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=1800, max_entries=10)  # Cache por 30 minutos, máximo 10 entradas
 def load_countries_data(countries):
     """Carrega dados de países específicos com cache e tratamento de erro robusto"""
     try:
@@ -129,7 +164,7 @@ def load_countries_data(countries):
 
 def get_fallback_brasil_data():
     """Retorna dados de fallback para o Brasil quando a API não está disponível"""
-    import pandas as pd
+    pd = get_pandas()
     
     # Dados simulados baseados em dados reais aproximados
     fallback_data = {
@@ -149,7 +184,7 @@ def get_fallback_brasil_data():
 
 def get_fallback_world_data(limit=10):
     """Retorna dados de fallback para países quando a API não está disponível"""
-    import pandas as pd
+    pd = get_pandas()
     
     # Dados simulados baseados em dados reais aproximados
     fallback_data = {
@@ -167,7 +202,7 @@ def get_fallback_world_data(limit=10):
 
 def get_fallback_countries_data(countries):
     """Retorna dados de fallback para países específicos quando a API não está disponível"""
-    import pandas as pd
+    pd = get_pandas()
     
     # Dados simulados para países específicos
     fallback_mapping = {
@@ -351,130 +386,124 @@ def dashboard_brasil():
 
 def dashboard_comparacao():
     """Dashboard de comparação mundial"""
-    st.header("🌍 COVID-19 - Comparação Mundial")
-    st.markdown("Análise comparativa entre o Brasil e outros países")
+    st.header("🌍 Comparação Mundial")
+    st.markdown("Compare dados da COVID-19 entre diferentes países")
     
     # Seleção de países
-    st.subheader("Selecione países para comparar com o Brasil")
-    
-    paises_opcoes = [
-        'USA', 'India', 'Russia', 'UK', 'France', 'Italy', 'Germany', 
-        'Spain', 'Argentina', 'Colombia', 'Mexico', 'Peru', 'South Africa', 
-        'China', 'Japan'
+    paises_disponiveis = [
+        'USA', 'India', 'France', 'Germany', 'Iran', 'Russia', 
+        'South Korea', 'Japan', 'Italy', 'Turkey', 'UK', 'China'
     ]
     
     paises_selecionados = st.multiselect(
-        "Países:",
-        paises_opcoes,
-        default=['USA', 'India', 'France', 'Argentina']
+        "Selecione os países para comparação:",
+        paises_disponiveis,
+        default=['USA', 'India', 'France', 'Germany']
     )
     
-    if not paises_selecionados:
-        st.warning("Selecione pelo menos um país para comparação.")
-        return
-    
-    # Carregar dados
-    with st.spinner("Carregando dados mundiais..."):
-        df_world = load_world_data(10)
-        df_countries = load_countries_data(paises_selecionados)
-    
-    if df_world is None or df_world.empty:
-        st.error("❌ Não foi possível carregar os dados mundiais.")
-        return
-    
-    # Top países (excluindo Brasil)
-    st.subheader("🏆 Top 5 Países (excluindo Brasil)")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("**Casos Confirmados**")
-        fig_casos = px.bar(
-            df_world.head(5),
-            x='country',
-            y='cases',
-            labels={'cases': 'Casos', 'country': 'País'},
-            color='cases',
-            color_continuous_scale='Blues'
-        )
-        fig_casos.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_casos, use_container_width=True)
-    
-    with col2:
-        st.markdown("**Óbitos**")
-        fig_obitos = px.bar(
-            df_world.head(5),
-            x='country',
-            y='deaths',
-            labels={'deaths': 'Óbitos', 'country': 'País'},
-            color='deaths',
-            color_continuous_scale='Reds'
-        )
-        fig_obitos.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_obitos, use_container_width=True)
-    
-    with col3:
-        st.markdown("**Taxa de Mortalidade**")
-        df_world['mortality_rate'] = (df_world['deaths'] / df_world['cases'] * 100).fillna(0)
-        fig_mortalidade = px.bar(
-            df_world.head(5),
-            x='country',
-            y='mortality_rate',
-            labels={'mortality_rate': 'Taxa (%)', 'country': 'País'},
-            color='mortality_rate',
-            color_continuous_scale='Oranges'
-        )
-        fig_mortalidade.update_layout(height=300, showlegend=False)
-        st.plotly_chart(fig_mortalidade, use_container_width=True)
-    
-    # Comparação com países selecionados
-    if df_countries is not None and not df_countries.empty:
-        st.subheader("📈 Comparação Detalhada")
+    if paises_selecionados:
+        # Carregar dados dos países selecionados
+        with st.spinner("Carregando dados dos países..."):
+            df_paises = load_countries_data(paises_selecionados)
         
-        # Adicionar Brasil aos dados
-        df_brasil = load_brasil_data()
-        if df_brasil is not None and not df_brasil.empty:
-            brasil_data = {
-                'country': 'Brazil',
-                'cases': df_brasil['last_available_confirmed'].sum(),
-                'deaths': df_brasil['last_available_deaths'].sum(),
-                'casesPerOneMillion': df_brasil['last_available_confirmed'].sum() / 215.3,  # População em milhões
-                'deathsPerOneMillion': df_brasil['last_available_deaths'].sum() / 215.3
-            }
+        if df_paises is not None and not df_paises.empty:
+            # Exibir dados em tabela
+            st.subheader("📊 Dados Comparativos")
+            st.dataframe(df_paises)
             
-            # Combinar dados
-            df_comparison = pd.concat([
-                df_countries,
-                pd.DataFrame([brasil_data])
-            ], ignore_index=True)
-            
+            # Gráficos comparativos
             col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown("**Casos por Milhão de Habitantes**")
-                fig_per_million = px.bar(
-                    df_comparison,
-                    x='country',
-                    y='casesPerOneMillion',
-                    labels={'casesPerOneMillion': 'Casos por Milhão', 'country': 'País'},
-                    color='casesPerOneMillion',
-                    color_continuous_scale='Viridis'
-                )
-                fig_per_million.update_layout(height=400, showlegend=False)
-                st.plotly_chart(fig_per_million, use_container_width=True)
+                st.subheader("📈 Casos Totais")
+                if 'cases' in df_paises.columns:
+                    px = get_plotly_express()
+                    fig = px.bar(df_paises, x='country', y='cases', 
+                               title="Casos Totais por País")
+                    st.plotly_chart(fig, use_container_width=True)
             
             with col2:
-                st.markdown("**Óbitos por Milhão de Habitantes**")
-                fig_deaths_per_million = px.bar(
-                    df_comparison,
-                    x='country',
-                    y='deathsPerOneMillion',
-                    labels={'deathsPerOneMillion': 'Óbitos por Milhão', 'country': 'País'},
-                    color='deathsPerOneMillion',
-                    color_continuous_scale='Reds'
-                )
-                fig_deaths_per_million.update_layout(height=400, showlegend=False)
-                st.plotly_chart(fig_deaths_per_million, use_container_width=True)
+                st.subheader("💀 Óbitos Totais")
+                if 'deaths' in df_paises.columns:
+                    px = get_plotly_express()
+                    fig = px.bar(df_paises, x='country', y='deaths', 
+                               title="Óbitos Totais por País", color_discrete_sequence=['red'])
+                    st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.error("❌ Não foi possível carregar os dados dos países selecionados.")
+    else:
+        st.info("👆 Selecione pelo menos um país para visualizar os dados.")
+
+# Função de monitoramento de memória
+def get_memory_usage():
+    """Obtém uso de memória atual (simplificado para Streamlit Cloud)"""
+    try:
+        import psutil
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        memory_mb = memory_info.rss / 1024 / 1024  # Converter para MB
+        return memory_mb
+    except ImportError:
+        # Se psutil não estiver disponível, retorna None
+        return None
+    except Exception:
+        return None
+
+def show_memory_debug():
+    """Mostra informações de debug de memória se habilitado"""
+    if st.sidebar.checkbox("🔍 Debug de Memória", value=False):
+        memory_usage = get_memory_usage()
+        if memory_usage:
+            st.sidebar.metric("Uso de Memória", f"{memory_usage:.1f} MB")
+            if memory_usage > 800:  # Alerta se próximo do limite de 1GB
+                st.sidebar.warning("⚠️ Uso de memória alto!")
+        else:
+            st.sidebar.info("Monitoramento de memória não disponível")
+
+def main():
+    """Função principal do dashboard"""
+    st.title("🦠 Dashboard COVID-19")
+    st.markdown("Análise de dados da COVID-19 no Brasil e no mundo")
+    
+    # Sidebar para navegação
+    st.sidebar.title("Navegação")
+    page = st.sidebar.selectbox(
+        "Escolha uma página:",
+        ["Brasil", "Análises Avançadas", "Comparação Mundial"]
+    )
+    
+    # Monitoramento de memória (debug)
+    show_memory_debug()
+    
+    # Informações na sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 Sobre o Dashboard")
+    st.sidebar.markdown("""
+    Este dashboard apresenta dados atualizados sobre a COVID-19:
+    
+    **🇧🇷 Brasil**: Análise detalhada por estados
+    **📈 Análises Avançadas**: Séries temporais, mapas e indicadores
+    **🌍 Mundial**: Comparação entre países
+    
+    **Fontes de dados:**
+    - Brasil.io (dados nacionais)
+    - Disease.sh (dados mundiais)
+    """)
+    
+    # Renderizar página selecionada
+    if page == "Brasil":
+        dashboard_brasil()
+    elif page == "Análises Avançadas":
+        dashboard_analises_avancadas()
+    elif page == "Comparação Mundial":
+        dashboard_comparacao()
+    
+    # Footer
+    st.markdown("---")
+    st.markdown("*Dashboard desenvolvido com Streamlit | Dados atualizados automaticamente*")
+
+if __name__ == "__main__":
+    main()
 
 def dashboard_analises_avancadas():
     """Dashboard com análises avançadas dos dados de COVID-19 do Brasil"""
@@ -557,47 +586,3 @@ def dashboard_analises_avancadas():
             create_regional_analysis(brasil_data)
         else:
             st.warning("Dados regionais não disponíveis")
-
-def main():
-    """Função principal da aplicação"""
-    
-    # Título principal
-    st.title("🦠 Dashboard COVID-19")
-    st.markdown("Análise de dados da COVID-19 no Brasil e no mundo")
-    
-    # Sidebar para navegação
-    st.sidebar.title("Navegação")
-    page = st.sidebar.selectbox(
-        "Escolha uma página:",
-        ["Brasil", "Análises Avançadas", "Comparação Mundial"]
-    )
-    
-    # Informações na sidebar
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Sobre o Dashboard")
-    st.sidebar.markdown("""
-    Este dashboard apresenta dados atualizados sobre a COVID-19:
-    
-    **🇧🇷 Brasil**: Análise detalhada por estados
-    **📈 Análises Avançadas**: Séries temporais, mapas e indicadores
-    **🌍 Mundial**: Comparação entre países
-    
-    **Fontes de dados:**
-    - Brasil.io (dados nacionais)
-    - Disease.sh (dados mundiais)
-    """)
-    
-    # Renderizar página selecionada
-    if page == "Brasil":
-        dashboard_brasil()
-    elif page == "Análises Avançadas":
-        dashboard_analises_avancadas()
-    elif page == "Comparação Mundial":
-        dashboard_comparacao()
-    
-    # Footer
-    st.markdown("---")
-    st.markdown("*Dashboard desenvolvido com Streamlit | Dados atualizados automaticamente*")
-
-if __name__ == "__main__":
-    main()
