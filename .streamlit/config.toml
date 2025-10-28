@@ -1,66 +1,33 @@
-# Configuração do Streamlit - Atualizada para versões recentes
-
 [global]
-# Se True, mostra um aviso quando você executa um script via "python my_script.py"
-showWarningOnDirectExecution = true
+# Configuração mínima para Streamlit Cloud
+showWarningOnDirectExecution = false
 
 [logger]
-# Nível de logging: 'error', 'warning', 'info', ou 'debug'
-level = "info"
+level = "error"
 
-[browser]
-# Endereço onde os usuários devem apontar seus navegadores
-serverAddress = "localhost"
-
-# Se deve enviar estatísticas de uso para o Streamlit
-gatherUsageStats = true
-
-# Porta onde os usuários devem apontar seus navegadores
-serverPort = 8501
+[client]
+# Configurações do cliente
+showErrorDetails = false
+toolbarMode = "minimal"
 
 [server]
-# Não assistir mudanças em certas pastas
-folderWatchBlacklist = []
-
-# Tipo de observador de arquivos
-fileWatcherType = "auto"
-
-# Se false, tentará abrir uma janela do navegador na inicialização
-headless = false
-
-# Reexecutar automaticamente o script quando o arquivo for modificado
+# Configurações essenciais do servidor
+headless = true
 runOnSave = false
-
-# Porta onde o servidor escutará conexões do navegador
 port = 8501
+enableCORS = false
+enableXsrfProtection = false
 
-# Caminho base para a URL onde o Streamlit deve ser acessível
-baseUrlPath = ""
-
-# Suporte para Cross-Origin Request Sharing (CORS)
-enableCORS = true
-
-# Suporte para Cross-Site Request Forgery (XSRF)
-enableXsrfProtection = true
-
-# Tamanho máximo para arquivos enviados (em megabytes)
+# Configurações de upload e mensagem
 maxUploadSize = 200
-
-# Tamanho máximo de mensagens via WebSocket (em megabytes)
 maxMessageSize = 200
 
-# Suporte para compressão websocket
+# Configurações de compressão
 enableWebsocketCompression = false
 
 [theme]
-# Cor primária para elementos interativos
-primaryColor = "#007bff"
-
-# Cor de fundo da área de conteúdo principal
-backgroundColor = "#ffffff"
-
-# Cor de fundo da barra lateral e widgets
-secondaryBackgroundColor = "#f8f9fa"
-
-# Cor usada para quase todo o texto
+# Tema personalizado
+primaryColor = "#FF6B6B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
 textColor = "#262730"

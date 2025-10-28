@@ -8,15 +8,36 @@ from plotly.subplots import make_subplots
 import sys
 import os
 
+# Verificação de saúde para Streamlit Cloud
+def health_check():
+    """Verificação de saúde simples para o Streamlit Cloud"""
+    try:
+        # Teste básico de funcionalidade
+        test_df = pd.DataFrame({'test': [1, 2, 3]})
+        return True
+    except Exception:
+        return False
+
+# Inicialização rápida para evitar timeouts
+if not health_check():
+    st.error("❌ Falha na verificação de saúde da aplicação")
+    st.stop()
+
 # Adicionar o diretório atual ao path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
-from src.data.api_client import COVID19APIClient
-from src.components.advanced_analytics import (
-    create_time_series_charts, create_moving_averages_chart, 
-    create_per_capita_analysis, create_brazil_charts, create_regional_analysis
-)
+# Importações condicionais para evitar falhas de inicialização
+try:
+    from src.data.api_client import COVID19APIClient
+    from src.components.advanced_analytics import (
+        create_time_series_charts, create_moving_averages_chart, 
+        create_per_capita_analysis, create_brazil_charts, create_regional_analysis
+    )
+    IMPORTS_SUCCESS = True
+except ImportError as e:
+    st.error(f"❌ Erro ao importar módulos: {str(e)}")
+    IMPORTS_SUCCESS = False
 
 # Configuração da página
 st.set_page_config(
@@ -25,6 +46,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Verificação adicional de saúde
+if not IMPORTS_SUCCESS:
+    st.error("❌ Falha ao carregar componentes da aplicação")
+    st.info("🔄 Tente recarregar a página em alguns instantes")
+    st.stop()
 
 # CSS customizado
 st.markdown("""
