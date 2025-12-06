@@ -1,6 +1,6 @@
-# Dashboard COVID-19
+# Dashboard COVID-19 Brasil
 
-Um dashboard interativo para análise de dados da COVID-19 no Brasil e no mundo, desenvolvido com Streamlit e Python.
+Um dashboard interativo para análise de dados da COVID-19 no Brasil, desenvolvido com Streamlit e Python.
 
 ## 🌐 Acesso Online
 
@@ -10,15 +10,31 @@ Um dashboard interativo para análise de dados da COVID-19 no Brasil e no mundo,
 
 ## 📋 Descrição
 
-Este projeto apresenta um dashboard interativo que permite visualizar e analisar dados da COVID-19, com foco especial no Brasil. O dashboard oferece diferentes visualizações e análises comparativas, permitindo uma compreensão mais profunda da evolução da pandemia.
+Este projeto apresenta um dashboard interativo completo para visualização e análise de dados da COVID-19 no Brasil. Com uma interface moderna e intuitiva, oferece múltiplas visualizações, análises estatísticas avançadas e mapas interativos para acompanhamento da pandemia.
 
 ## ✨ Funcionalidades
 
-- Visualização de dados da COVID-19 no Brasil
-- Análise comparativa entre diferentes países
-- Gráficos interativos e atualizados
-- Interface responsiva e intuitiva
-- Navegação entre diferentes visualizações
+### 📊 Visão Geral
+- Painel com indicadores principais (casos totais, óbitos, recuperados)
+- Gráficos de evolução temporal
+- Séries históricas personalizáveis
+
+### 🗺️ Visualizações Geográficas
+- Mapa interativo do Brasil com dados por estado
+- Visualização de densidade de casos
+- Comparação regional
+
+### 📈 Análises Avançadas
+- **Médias Móveis**: Suavização de dados com médias móveis de 7 dias
+- **Análises Per Capita**: Normalização por 100k habitantes
+- **Análise Regional**: Comparação entre regiões do Brasil
+- **Tendências**: Identificação de padrões e tendências
+
+### 🔍 Recursos Interativos
+- Filtros por estado e período
+- Gráficos dinâmicos e responsivos
+- Download de dados
+- Interface responsiva para desktop e mobile
 
 ## 🌐 APIs Utilizadas
 
@@ -40,14 +56,13 @@ O projeto utiliza duas APIs principais para obtenção dos dados:
 
 ## 🛠️ Tecnologias Utilizadas
 
-- Python 3.9+
-- Streamlit
-- Pandas
-- Plotly
-- Requests
-- Folium (para mapas interativos)
-- Geopandas
-- Python-dotenv
+- **Python 3.9+** - Linguagem de programação
+- **Streamlit** - Framework para criação do dashboard
+- **Pandas** - Manipulação e análise de dados
+- **Plotly** - Visualizações interativas e gráficos
+- **Folium** - Mapas interativos
+- **Requests** - Requisições HTTP para APIs
+- **Python-dotenv** - Gerenciamento de variáveis de ambiente
 
 ## 🚀 Como Executar Localmente
 
@@ -59,23 +74,23 @@ O projeto utiliza duas APIs principais para obtenção dos dados:
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/dashboard-covid19.git
-cd dashboard-covid19
+git clone https://github.com/Lucasfonseca2002/Dashboard-COVID-19.git
+cd Dashboard-COVID-19
 ```
 
 2. Crie um ambiente virtual:
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 3. Ative o ambiente virtual:
 - **Windows:**
   ```bash
-  venv\Scripts\activate
+  .venv\Scripts\activate
   ```
 - **macOS/Linux:**
   ```bash
-  source venv/bin/activate
+  source .venv/bin/activate
   ```
 
 4. Instale as dependências:
@@ -83,12 +98,21 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-5. Execute a aplicação:
+5. Configure as variáveis de ambiente:
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o arquivo .env e adicione sua chave API do Brasil.IO
+# Obtenha sua chave em: https://brasil.io/auth/tokens/
+```
+
+6. Execute a aplicação:
 ```bash
 streamlit run streamlit_app.py
 ```
 
-6. Acesse o dashboard em seu navegador:
+7. Acesse o dashboard em seu navegador:
 ```
 http://localhost:8501
 ```
@@ -133,33 +157,50 @@ O Streamlit Cloud é a forma mais simples e gratuita de publicar sua aplicação
 ## 📁 Estrutura do Projeto
 
 ```
-dashboard-covid19/
-├── app.py              # Arquivo principal da aplicação
-├── requirements.txt    # Dependências do projeto
-├── Dockerfile          # Configuração do container
-├── .dockerignore       # Arquivos ignorados no build
-├── src/                # Código fonte
-│   ├── components/     # Componentes do dashboard
-│   └── utils/          # Funções utilitárias
-├── assets/             # Arquivos estáticos
-├── tests/              # Testes automatizados
-└── docs/               # Documentação
+Dashboard-COVID-19/
+├── streamlit_app.py           # Arquivo principal da aplicação Streamlit
+├── requirements.txt           # Dependências do projeto
+├── Dockerfile                 # Configuração do container Docker
+├── .dockerignore              # Arquivos ignorados no build
+├── .env.example               # Template de variáveis de ambiente
+├── .gitignore                 # Arquivos ignorados pelo Git
+├── src/                       # Código fonte
+│   ├── components/            # Componentes do dashboard
+│   │   ├── advanced_analytics.py    # Análises avançadas
+│   │   └── common_components.py     # Componentes reutilizáveis
+│   ├── data/                  # Módulos de dados
+│   │   ├── api_client.py      # Cliente para APIs externas
+│   │   └── data_processor.py  # Processamento de dados
+│   └── utils/                 # Funções utilitárias
+│       ├── constants.py       # Constantes do projeto
+│       └── helpers.py         # Funções auxiliares
+├── assets/                    # Arquivos estáticos (CSS, imagens)
+├── tests/                     # Testes automatizados
+└── docs/                      # Documentação adicional
 ```
 
-## 📦 Quais arquivos subir para o repositório?
+## 📦 Boas Práticas - Arquivos no Repositório
 
-**Inclua no repositório:**
-- Todo o código fonte (`app.py`, `src/`, `assets/`, `tests/`, `docs/`)
-- `requirements.txt`
-- `Dockerfile`
-- `.dockerignore`
-- `README.md`
+### ✅ Inclua no repositório:
+- Todo o código fonte (`streamlit_app.py`, `src/`, `assets/`, `tests/`, `docs/`)
+- `requirements.txt` - Dependências do projeto
+- `Dockerfile` e `.dockerignore` - Configuração Docker
+- `.env.example` - Template de variáveis de ambiente
+- `.gitignore` - Arquivos a serem ignorados
+- `README.md` - Documentação
 
-**Não inclua no repositório:**
-- Arquivo `.env` (contém informações sensíveis, como chaves de API)
-- Pastas de ambiente virtual (`.venv/`, `venv/`, `ENV/`)
-- Arquivos de cache Python (`__pycache__/`, `*.pyc`)
-- Dados sensíveis ou pessoais
+### ❌ Não inclua no repositório:
+- `.env` - Contém chaves de API e informações sensíveis
+- `.venv/`, `venv/`, `ENV/` - Ambientes virtuais Python
+- `__pycache__/`, `*.pyc`, `*.pyo` - Cache do Python
+- `.DS_Store`, `Thumbs.db` - Arquivos do sistema operacional
+- Dados pessoais ou sensíveis
+
+### 🔐 Segurança:
+- **Nunca** commite chaves de API ou tokens
+- Use `.env.example` como template (sem valores reais)
+- Configure secrets no Streamlit Cloud para produção
+- Regenere chaves de API se forem expostas acidentalmente
 
 ## 🤝 Contribuindo
 
