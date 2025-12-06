@@ -79,7 +79,7 @@ def create_moving_averages_chart(df_with_ma):
             row=1, col=1
         )
         fig.add_trace(
-            go.Scatter(x=df_state['date'], y=df_state['casos_ma7'], 
+            go.Scatter(x=df_state['date'], y=df_state['ma_cases'],
                       name='Média Móvel 7d', line=dict(color='blue', width=3)),
             row=1, col=1
         )
@@ -91,7 +91,7 @@ def create_moving_averages_chart(df_with_ma):
             row=2, col=1
         )
         fig.add_trace(
-            go.Scatter(x=df_state['date'], y=df_state['obitos_ma7'], 
+            go.Scatter(x=df_state['date'], y=df_state['ma_deaths'],
                       name='Média Móvel 7d', line=dict(color='red', width=3)),
             row=2, col=1
         )
