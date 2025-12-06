@@ -4,7 +4,7 @@ Um dashboard interativo para análise de dados da COVID-19 no Brasil, desenvolvi
 
 ## 🌐 Acesso Online
 
-**🚀 Dashboard em Produção:** [https://dashboard-covid-19-brasil.streamlit.app/](https://dashboard-covid-19-brasil.streamlit.app/)
+**🚀 Dashboard em Produção:** [https://dash-covid-19.streamlit.app/](https://dash-covid-19.streamlit.app/)
 
 > Acesse o dashboard diretamente no seu navegador - sem necessidade de instalação!
 
