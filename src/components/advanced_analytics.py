@@ -9,7 +9,9 @@ import folium
 from streamlit_folium import st_folium
 import json
 
-def create_time_series_charts(df_historical, selected_states=None):
+from typing import Optional, List
+
+def create_time_series_charts(df_historical: Optional[pd.DataFrame], selected_states: Optional[List[str]] = None) -> None:
     """Cria gráficos de séries temporais"""
     if df_historical is None or df_historical.empty:
         st.error("Dados históricos não disponíveis")
@@ -51,7 +53,7 @@ def create_time_series_charts(df_historical, selected_states=None):
     fig_obitos.update_layout(height=400)
     st.plotly_chart(fig_obitos, use_container_width=True)
 
-def create_moving_averages_chart(df_with_ma):
+def create_moving_averages_chart(df_with_ma: Optional[pd.DataFrame]) -> None:
     """Cria gráfico com médias móveis"""
     if df_with_ma is None or df_with_ma.empty:
         return
@@ -99,7 +101,7 @@ def create_moving_averages_chart(df_with_ma):
         fig.update_layout(height=600, title=f'Análise Temporal - {selected_state}')
         st.plotly_chart(fig, use_container_width=True)
 
-def create_per_capita_analysis(df_estados):
+def create_per_capita_analysis(df_estados: Optional[pd.DataFrame]) -> None:
     """Cria análises per capita"""
     if df_estados is None or df_estados.empty:
         return
@@ -152,7 +154,7 @@ def create_per_capita_analysis(df_estados):
         fig_mort.update_layout(height=500, showlegend=False)
         st.plotly_chart(fig_mort, use_container_width=True)
 
-def create_brazil_charts(df_estados):
+def create_brazil_charts(df_estados: Optional[pd.DataFrame]) -> None:
     """Cria visualizações por estados do Brasil usando gráficos de barras"""
     st.subheader("📊 Análise Comparativa entre Estados")
     
@@ -330,7 +332,7 @@ def create_brazil_charts(df_estados):
         st.error(f"Erro ao criar visualizações: {str(e)}")
         st.info("Verifique se os dados estão disponíveis e tente novamente.")
 
-def create_regional_analysis(df_estados):
+def create_regional_analysis(df_estados: Optional[pd.DataFrame]) -> None:
     """Cria análise por regiões do Brasil"""
     st.subheader("🌎 Análise por Regiões")
     

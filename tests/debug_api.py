@@ -68,7 +68,7 @@ try:
         }
         
         print(f"   • URL: {url}")
-        print(f"   • Headers: {headers}")
+        print(f"   • Headers: *** [HIDDEN] ***")
         print(f"   • Params: {params}")
         
         response = requests.get(url, headers=headers, params=params)

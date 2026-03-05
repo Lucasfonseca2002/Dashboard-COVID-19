@@ -1,9 +1,11 @@
 # Componentes reutilizáveis para Streamlit
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
+from typing import Optional, List, Dict, Any, Union
 
-def aplicar_layout_padrao(fig, altura=400):
+def aplicar_layout_padrao(fig: go.Figure, altura: int = 400) -> go.Figure:
     """Aplica um estilo padrão para os gráficos Plotly"""
     fig.update_layout(
         paper_bgcolor='white',
@@ -13,7 +15,13 @@ def aplicar_layout_padrao(fig, altura=400):
     )
     return fig
 
-def criar_card_estatistica(titulo, valor, descricao="", delta=None, delta_color="normal"):
+def criar_card_estatistica(
+    titulo: str,
+    valor: Union[str, int, float],
+    descricao: str = "",
+    delta: Optional[str] = None,
+    delta_color: str = "normal"
+) -> None:
     """Cria um card padronizado para exibir estatísticas usando Streamlit metrics
     
     Parâmetros:
@@ -37,8 +45,15 @@ def criar_card_estatistica(titulo, valor, descricao="", delta=None, delta_color=
         help=descricao
     )
 
-def criar_grafico_barras_horizontais(df, coluna_x, coluna_y='state_name', n_items=10, 
-                                    titulo='', cor_escala='Blues', formato_texto=',.0f'):
+def criar_grafico_barras_horizontais(
+    df: pd.DataFrame,
+    coluna_x: str,
+    coluna_y: str = 'state_name',
+    n_items: int = 10,
+    titulo: str = '',
+    cor_escala: str = 'Blues',
+    formato_texto: str = ',.0f'
+) -> go.Figure:
     """Cria um gráfico de barras horizontais padronizado
     
     Parâmetros:
@@ -82,8 +97,13 @@ def criar_grafico_barras_horizontais(df, coluna_x, coluna_y='state_name', n_item
     )
     return aplicar_layout_padrao(fig, altura=400)
 
-def criar_ranking_lista(df, coluna_score, coluna_titulo='state_name', 
-                       maior=True, metricas=None):
+def criar_ranking_lista(
+    df: pd.DataFrame,
+    coluna_score: str,
+    coluna_titulo: str = 'state_name',
+    maior: bool = True,
+    metricas: Optional[List[str]] = None
+) -> None:
     """Cria uma lista formatada para rankings usando Streamlit
     
     Parâmetros:
@@ -124,7 +144,7 @@ def criar_ranking_lista(df, coluna_score, coluna_titulo='state_name',
         st.write(f"Score: {score:.2f} | {texto_metrica}")
         st.write("---")
 
-def criar_header(titulo, subtitulo=""):
+def criar_header(titulo: str, subtitulo: str = "") -> None:
     """Cria um cabeçalho padronizado para dashboards
     
     Parâmetros:
@@ -139,7 +159,7 @@ def criar_header(titulo, subtitulo=""):
         st.markdown(f"*{subtitulo}*")
     st.divider()
 
-def criar_secao_titulo(titulo, icone=""):
+def criar_secao_titulo(titulo: str, icone: str = "") -> None:
     """Cria um título de seção padronizado
     
     Parâmetros:
@@ -152,7 +172,7 @@ def criar_secao_titulo(titulo, icone=""):
     titulo_texto = f"{icone} {titulo}" if icone else titulo
     st.subheader(titulo_texto)
 
-def exibir_grafico(fig, titulo="", use_container_width=True):
+def exibir_grafico(fig: go.Figure, titulo: str = "", use_container_width: bool = True) -> None:
     """Exibe um gráfico Plotly no Streamlit
     
     Parâmetros:
@@ -168,7 +188,7 @@ def exibir_grafico(fig, titulo="", use_container_width=True):
         st.subheader(titulo)
     st.plotly_chart(fig, use_container_width=use_container_width)
 
-def criar_colunas_metricas(metricas_dados, num_colunas=None):
+def criar_colunas_metricas(metricas_dados: List[Dict[str, Any]], num_colunas: Optional[int] = None) -> None:
     """Cria colunas com métricas usando Streamlit
     
     Parâmetros:
