@@ -3,9 +3,13 @@
 import requests
 import pandas as pd
 import os
+import logging
 from dotenv import load_dotenv
 from src.utils.constants import BRASIL_IO_API_URL, WORLD_COVID_API_URL
 import time
+
+# Configurar logger
+logger = logging.getLogger(__name__)
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -13,13 +17,16 @@ load_dotenv()
 class COVID19APIClient:
     """Cliente para acessar APIs de dados da COVID-19"""
     
-    def __init__(self): 
-        self.brasil_io_api_key = os.getenv('BRASIL_IO_API_KEY')
-        self.brasil_populacao = 215313498  # População do Brasil com base na estimativa do IBGE em 2022
-        self.timeout = 10  # Timeout de 10 segundos
-        self.max_retries = 2  # Máximo de 2 tentativas
+    def __init__(self) -> None:
+        self.brasil_io_api_key: str | None = os.getenv('BRASIL_IO_API_KEY')
+        if not self.brasil_io_api_key:
+            logger.warning("BRASIL_IO_API_KEY não foi encontrada nas variáveis de ambiente. Acesso à API do Brasil pode ser restrito.")
+
+        self.brasil_populacao: int = 215313498  # População do Brasil com base na estimativa do IBGE em 2022
+        self.timeout: int = 10  # Timeout de 10 segundos
+        self.max_retries: int = 2  # Máximo de 2 tentativas
         
-    def _make_request(self, url, headers=None, params=None):
+    def _make_request(self, url: str, headers: dict | None = None, params: dict | None = None) -> requests.Response | None:
         """Faz uma requisição HTTP com retry e timeout"""
         for attempt in range(self.max_retries):
             try:
@@ -35,21 +42,21 @@ class COVID19APIClient:
                     time.sleep(2 ** attempt)  # Backoff exponencial
                     continue
                 else:
-                    print(f"Erro HTTP {response.status_code} na tentativa {attempt + 1}")
+                    logger.warning(f"Erro HTTP {response.status_code} na tentativa {attempt + 1}")
                     
             except requests.exceptions.Timeout:
-                print(f"Timeout na tentativa {attempt + 1} para {url}")
+                logger.warning(f"Timeout na tentativa {attempt + 1} para {url}")
             except requests.exceptions.ConnectionError:
-                print(f"Erro de conexão na tentativa {attempt + 1} para {url}")
+                logger.warning(f"Erro de conexão na tentativa {attempt + 1} para {url}")
             except requests.exceptions.RequestException as e:
-                print(f"Erro na requisição na tentativa {attempt + 1}: {e}")
+                logger.error(f"Erro na requisição na tentativa {attempt + 1}: {e}")
                 
             if attempt < self.max_retries - 1:
                 time.sleep(1)  # Aguarda 1 segundo antes de tentar novamente
                 
         return None
         
-    def get_brasil_data(self):
+    def get_brasil_data(self) -> pd.DataFrame | None:
         """Obtém dados atuais do Brasil por estado"""
         try:
             url = f"{BRASIL_IO_API_URL}/caso_full/data"
@@ -74,10 +81,10 @@ class COVID19APIClient:
             return None
             
         except Exception as e:
-            print(f"Erro ao obter dados do Brasil: {e}")
+            logger.error(f"Erro ao obter dados do Brasil: {e}")
             return None
     
-    def get_world_top_countries(self, limit=10):
+    def get_world_top_countries(self, limit: int = 10) -> pd.DataFrame | None:
         """Obtém dados dos países com mais casos (excluindo Brasil)"""
         try:
             url = f"{WORLD_COVID_API_URL}/countries"
@@ -96,10 +103,10 @@ class COVID19APIClient:
             return None
             
         except Exception as e:
-            print(f"Erro ao obter dados mundiais: {e}")
+            logger.error(f"Erro ao obter dados mundiais: {e}")
             return None
     
-    def get_world_countries_data(self, countries):
+    def get_world_countries_data(self, countries: list[str]) -> pd.DataFrame | None:
         """Obtém dados de países específicos"""
         try:
             if not countries:
@@ -122,10 +129,10 @@ class COVID19APIClient:
             return None
             
         except Exception as e:
-            print(f"Erro ao obter dados de países específicos: {e}")
+            logger.error(f"Erro ao obter dados de países específicos: {e}")
             return None
     
-    def get_brasil_historical_data(self, limit=None):
+    def get_brasil_historical_data(self, limit: int | None = None) -> pd.DataFrame | None:
         """Obtém dados históricos do Brasil"""
         try:
             headers = {
@@ -151,10 +158,10 @@ class COVID19APIClient:
             return None
             
         except Exception as e:
-            print(f"Erro ao obter dados históricos do Brasil: {e}")
+            logger.error(f"Erro ao obter dados históricos do Brasil: {e}")
             return None
     
-    def get_brasil_time_series(self, state=None, days=30):
+    def get_brasil_time_series(self, state: str | None = None, days: int = 30) -> pd.DataFrame | None:
         """Obtém série temporal do Brasil ou de um estado específico"""
         try:
             headers = {
@@ -184,10 +191,10 @@ class COVID19APIClient:
             return None
             
         except Exception as e:
-            print(f"Erro ao obter série temporal: {e}")
+            logger.error(f"Erro ao obter série temporal: {e}")
             return None
     
-    def calculate_moving_averages(self, df, window=7):
+    def calculate_moving_averages(self, df: pd.DataFrame | None, window: int = 7) -> pd.DataFrame | None:
         """Calcula médias móveis para os dados"""
         try:
             if df is None or df.empty:
@@ -202,5 +209,5 @@ class COVID19APIClient:
             return df
             
         except Exception as e:
-            print(f"Erro ao calcular médias móveis: {e}")
+            logger.error(f"Erro ao calcular médias móveis: {e}")
             return df
