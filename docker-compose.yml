@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: covid19-dashboard
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - BRASIL_IO_API_KEY=${BRASIL_IO_API_KEY}
+    volumes:
+      # Monta o código local para hot-reload durante desenvolvimento
+      - .:/app
+      # Evita sobrescrever o diretório de pacotes do container
+      - /app/__pycache__
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3

@@ -1,5 +1,7 @@
 # Dashboard COVID-19 Brasil
 
+[![CI](https://github.com/Lucasfonseca2002/Dashboard-COVID-19/actions/workflows/ci.yml/badge.svg)](https://github.com/Lucasfonseca2002/Dashboard-COVID-19/actions/workflows/ci.yml)
+
 Um dashboard interativo para análise de dados da COVID-19 no Brasil, desenvolvido com Streamlit e Python.
 
 ## 🌐 Acesso Online

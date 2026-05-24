@@ -1,24 +1,49 @@
-# Usar uma imagem base do Python
+# ── Metadados da imagem ───────────────────────────────────────────────────────
 FROM python:3.9-slim
 
-# Definir o diretório de trabalho
+LABEL maintainer="Lucas Fonseca <lucas@lucasfonseca.dev>" \
+      version="1.0.0" \
+      description="Dashboard interativo de dados da COVID-19 com Streamlit" \
+      org.opencontainers.image.title="Dashboard COVID-19" \
+      org.opencontainers.image.source="https://github.com/lucasfonseca/Dashboard-COVID-19" \
+      org.opencontainers.image.licenses="MIT"
+
+# ── Variáveis de ambiente ─────────────────────────────────────────────────────
+ENV PORT=8501 \
+    HOST=0.0.0.0 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# ── Criar usuário não-root ────────────────────────────────────────────────────
+RUN useradd --create-home --shell /bin/bash appuser
+
+# ── Diretório de trabalho ─────────────────────────────────────────────────────
 WORKDIR /app
 
-# Copiar os arquivos de requisitos primeiro para aproveitar o cache do Docker
+# ── Instalar dependências (como root, antes de trocar de usuário) ─────────────
 COPY requirements.txt .
-
-# Instalar as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar o resto do código
+# ── Copiar código e ajustar dono dos arquivos ─────────────────────────────────
 COPY . .
+RUN chown -R appuser:appuser /app
 
-# Expor a porta que o Streamlit usa
+# ── Trocar para usuário não-root ──────────────────────────────────────────────
+USER appuser
+
+# ── Porta exposta ─────────────────────────────────────────────────────────────
 EXPOSE 8501
 
-# Configurar variáveis de ambiente
-ENV PORT=8501
-ENV HOST=0.0.0.0
+# ── Health check ─────────────────────────────────────────────────────────────
+# Streamlit expõe /_stcore/health quando o servidor está pronto
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')" \
+    || exit 1
 
-# Comando para executar a aplicação
-CMD streamlit run streamlit_app.py --server.port=$PORT --server.address=$HOST --server.headless=true
+# ── Comando de inicialização ──────────────────────────────────────────────────
+CMD ["sh", "-c", "streamlit run streamlit_app.py \
+    --server.port=$PORT \
+    --server.address=$HOST \
+    --server.headless=true \
+    --server.enableCORS=false \
+    --server.enableXsrfProtection=false"]

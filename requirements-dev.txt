@@ -1,0 +1,9 @@
+# Dependências de desenvolvimento e testes
+# Inclui todas as dependências de produção + ferramentas de teste/lint
+
+-r requirements.txt
+
+pytest==8.3.5
+pytest-mock==3.14.0
+pytest-cov==6.1.0
+ruff==0.11.10

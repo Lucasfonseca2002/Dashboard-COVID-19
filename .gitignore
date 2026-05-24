@@ -135,3 +135,8 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Agent / IDE configs
+.claude/
+.devcontainer/
+CLAUDE.md

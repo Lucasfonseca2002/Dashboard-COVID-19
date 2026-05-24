@@ -18,12 +18,20 @@ __pycache__/
 *.log
 .DS_Store
 
-# Arquivos de teste
+# Arquivos de teste e diagnóstico
 tests/
+scripts/
 docs/
+explain_code/
 
-# Arquivos de IDE
+# Arquivos de IDE e agente
 .vscode/
 .idea/
+.claude/
+.devcontainer/
 *.swp
-*.swo 
+*.swo
+
+# Outros
+requirements-dev.txt
+CLAUDE.md

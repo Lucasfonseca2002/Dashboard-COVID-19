@@ -30,6 +30,7 @@ sys.path.append(current_dir)
 # Importações condicionais para evitar falhas de inicialização
 try:
     from src.data.api_client import COVID19APIClient
+    from src.utils.helpers import format_number as _format_number
     from src.components.advanced_analytics import (
         create_time_series_charts, create_moving_averages_chart, 
         create_per_capita_analysis, create_brazil_charts, create_regional_analysis
@@ -196,8 +197,11 @@ def get_fallback_countries_data(countries):
         return pd.DataFrame()
 
 def format_number(num):
-    """Formata números com separadores de milhares"""
-    return f"{num:,}".replace(",", ".")
+    """Formata números com separadores de milhares (padrão brasileiro)"""
+    try:
+        return _format_number(num).replace(",", ".")
+    except Exception:
+        return str(num)
 
 def create_metric_card(label, value, css_class=""):
     """Cria um card de métrica personalizado"""

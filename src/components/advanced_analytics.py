@@ -8,6 +8,7 @@ from plotly.subplots import make_subplots
 import folium
 from streamlit_folium import st_folium
 import json
+from src.utils.constants import REGIOES_BRASIL
 
 def create_time_series_charts(df_historical, selected_states=None):
     """Cria gráficos de séries temporais"""
@@ -185,13 +186,7 @@ def create_brazil_charts(df_estados):
         
         with col1:
             # Filtro por região
-            regioes = {
-                'Norte': ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'],
-                'Nordeste': ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
-                'Centro-Oeste': ['DF', 'GO', 'MT', 'MS'],
-                'Sudeste': ['ES', 'MG', 'RJ', 'SP'],
-                'Sul': ['PR', 'RS', 'SC']
-            }
+            regioes = REGIOES_BRASIL
             
             selected_regions = st.multiselect(
                 "Filtrar por Região:",
@@ -335,13 +330,7 @@ def create_regional_analysis(df_estados):
     st.subheader("🌎 Análise por Regiões")
     
     # Definir regiões
-    regioes = {
-        'Norte': ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO'],
-        'Nordeste': ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE'],
-        'Centro-Oeste': ['DF', 'GO', 'MT', 'MS'],
-        'Sudeste': ['ES', 'MG', 'RJ', 'SP'],
-        'Sul': ['PR', 'RS', 'SC']
-    }
+    regioes = REGIOES_BRASIL
     
     # Adicionar coluna de região
     df_regional = df_estados.copy()
